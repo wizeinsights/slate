@@ -253,7 +253,7 @@ class Text extends Record(DEFAULTS) {
       const hasStart = start.key == key
       const hasEnd = end.key == key
 
-      if (hasStart && hasEnd) {
+      if (hasStart || hasEnd) {
         const index = hasStart ? start.offset : 0
         const length = hasEnd ? end.offset - index : text.length - index
 
