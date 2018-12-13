@@ -43,6 +43,7 @@ class Content extends React.Component {
     editor: Types.object.isRequired,
     id: Types.string,
     readOnly: Types.bool.isRequired,
+    selectOnly: Types.bool.isRequired,
     role: Types.string,
     spellCheck: Types.bool.isRequired,
     style: Types.object,
@@ -278,12 +279,15 @@ class Content extends React.Component {
    * element. This should be false for edits happening in non-contenteditable
    * children, such as void nodes and other nested Slate editors.
    *
+   * KLM: modified to not require contenteditable when editor is "selectOnly"
+   *
    * @param {Element} target
    * @return {Boolean}
    */
 
   isInEditor = target => {
     const { element } = this
+    const { selectOnly } = this.props
 
     let el
 
@@ -309,8 +313,10 @@ class Content extends React.Component {
       throw err
     }
 
+    // KLM: add selectOnly to check because still need this method to return
+    // true even for non-editable elements.
     return (
-      el.isContentEditable &&
+      (el.isContentEditable || selectOnly) &&
       (el === element || el.closest('[data-slate-editor]') === element)
     )
   }
@@ -425,6 +431,7 @@ class Content extends React.Component {
       id,
       className,
       readOnly,
+      selectOnly,
       editor,
       tabIndex,
       role,
@@ -454,7 +461,7 @@ class Content extends React.Component {
       // COMPAT: In iOS, a formatting menu with bold, italic and underline
       // buttons is shown which causes our internal value to get out of sync in
       // weird ways. This hides that. (2016/06/21)
-      ...(readOnly ? {} : { WebkitUserModify: 'read-write-plaintext-only' }),
+      ...((readOnly || selectOnly) ? {} : { WebkitUserModify: 'read-write-plaintext-only' }),
       // Allow for passed-in styles to override anything.
       ...props.style,
     }
@@ -467,14 +474,14 @@ class Content extends React.Component {
         data-slate-editor
         ref={this.ref}
         data-key={document.key}
-        contentEditable={readOnly ? null : true}
+        contentEditable={(readOnly || selectOnly) ? null : true}
         suppressContentEditableWarning
         id={id}
         className={className}
         autoCorrect={props.autoCorrect ? 'on' : 'off'}
         spellCheck={spellCheck}
         style={style}
-        role={readOnly ? null : role || 'textbox'}
+        role={(readOnly || selectOnly) ? null : role || 'textbox'}
         tabIndex={tabIndex}
         // COMPAT: The Grammarly Chrome extension works by changing the DOM out
         // from under `contenteditable` elements, which leads to weird behaviors

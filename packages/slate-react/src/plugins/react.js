@@ -63,6 +63,7 @@ function ReactPlugin(options = {}) {
         id={props.id}
         onEvent={(handler, event) => editor.run(handler, event)}
         readOnly={props.readOnly}
+        selectOnly={props.selectOnly}
         role={props.role}
         spellCheck={props.spellCheck}
         style={props.style}

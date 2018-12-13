@@ -44,6 +44,7 @@ class Editor extends React.Component {
     readOnly: Types.bool,
     role: Types.string,
     schema: Types.object,
+    selectOnly: Types.bool,
     spellCheck: Types.bool,
     style: Types.object,
     tabIndex: Types.number,
