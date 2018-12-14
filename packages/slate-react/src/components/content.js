@@ -142,7 +142,7 @@ class Content extends React.Component {
    */
 
   updateSelection = () => {
-    const { editor } = this.props
+    const { editor, selectOnly } = this.props
     const { value } = editor
     const { selection } = value
     const { isBackward } = selection
@@ -176,7 +176,21 @@ class Content extends React.Component {
     // If the Slate selection is focused, but the DOM's active element is not
     // the editor, we need to focus it.
     if (selection.isFocused && activeElement !== this.element) {
-      this.element.focus()
+      // KLM: need to restore the scroll position so container doesn't jump on focus.
+      if (selectOnly) {
+        const scrollContainer = this.element.closest('[data-scroll-container]')
+        if (scrollContainer) {
+          const top = scrollContainer.scrollTop
+          this.element.focus()
+          scrollContainer.scrollTop = top
+        } else {
+          console.warn("Can't get scroll container element to restore focus");
+          this.element.focus()
+        }
+      } else {
+        this.element.focus()
+      }
+
       updated = true
     }
 
@@ -244,7 +258,10 @@ class Content extends React.Component {
       }
 
       // Scroll to the selection, in case it's out of view.
-      scrollToSelection(native)
+      // KLM: don't want jumpy scrolling in Reader.
+      if (!selectOnly) {
+        scrollToSelection(native)
+      }
 
       // Then unset the `isUpdatingSelection` flag after a delay, to ensure that
       // it is still set when selection-related events from updating it fire.
