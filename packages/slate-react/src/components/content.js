@@ -433,6 +433,12 @@ class Content extends React.Component {
     const { activeElement } = window.document
     if (activeElement !== this.element) return
 
+    if (this.props.selectOnly) {
+      const native = window.getSelection()
+      removeAllRanges(native)
+      return
+    }
+
     this.props.onEvent('onSelect', event)
   }, 100)
 
@@ -478,7 +484,7 @@ class Content extends React.Component {
       // COMPAT: In iOS, a formatting menu with bold, italic and underline
       // buttons is shown which causes our internal value to get out of sync in
       // weird ways. This hides that. (2016/06/21)
-      ...((readOnly || selectOnly) ? {} : { WebkitUserModify: 'read-write-plaintext-only' }),
+      ...((readOnly || selectOnly) ? { WebkitUserModify: 'read-only' } : { WebkitUserModify: 'read-write-plaintext-only' }),
       // Allow for passed-in styles to override anything.
       ...props.style,
     }
