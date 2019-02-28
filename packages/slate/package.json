@@ -1,5 +1,5 @@
 {
-  "name": "slate",
+  "name": "@aykamko/slate",
   "description": "A completely customizable framework for building rich text editors.",
   "version": "0.44.8",
   "license": "MIT",
